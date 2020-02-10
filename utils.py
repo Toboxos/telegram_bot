@@ -72,7 +72,7 @@ class Chat:
 class Message:
 
     def __init__(self, data):
-        self.message_id = data['message_id']
+        self.id = data['message_id']
         self.date = data['date']
 
         self.fromUser = None
@@ -86,6 +86,9 @@ class Message:
         self.text = None
         if "text" in data:
             self.text = data['text']
+
+    def reply(self, text, bot, **kwargs):
+        self.chat.sendText( text, bot, reply_to_message_id=self.id, **kwargs)
 
 class ChatPhoto:
 
