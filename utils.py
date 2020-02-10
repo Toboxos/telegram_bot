@@ -69,6 +69,9 @@ class Chat:
     def sendHTML(self, text, bot, **kwargs):
         return bot.sendMessage( chat_id=self.id, text=text, parse_mode="HTML", **kwargs )
 
+    def sendDocument(self, name, file, bot, **kwargs):
+        return bot.sendDocument(self.id, name, file, **kwargs)
+
 class Message:
 
     def __init__(self, data):
@@ -77,15 +80,19 @@ class Message:
 
         self.fromUser = None
         if "from" in data:
-            self.fromUser = User(data['from'])
+            self.fromUser = User( data['from'] )
         
         self.chat = None
         if "chat" in data:
-            self.chat = Chat(data['chat'])
+            self.chat = Chat( data['chat'] )
 
         self.text = None
         if "text" in data:
             self.text = data['text']
+
+        self.Document = None
+        if "document" in data:
+            self.document = Document( data['document'] ) 
 
     def reply(self, text, bot, **kwargs):
         self.chat.sendText( text, bot, reply_to_message_id=self.id, **kwargs)
@@ -97,3 +104,24 @@ class ChatPhoto:
         self.small_file_unique_id = data['small_file_unique_id']
         self.big_file_id = data['big_file_id']
         self.big_file_unique_id = data['big_file_unique_id']
+
+class Document:
+
+    def __init__(self, data):
+        self.file_id = data['file_id']
+        self.file_unique_id = data['file_unique_id']
+        
+        self.file_name = ""
+        if "file_name" in data:
+            self.file_name = data['file_name']
+
+        self.mime_type = ""
+        if "mime_type" in data:
+            self.mime_type = data['mime_type']
+
+        self.file_ize = -1
+        if "file_size" in data:
+            self.file_size = data['file_size']
+
+    def download(self, bot):
+        return bot.downloadFile(self.file_id)
